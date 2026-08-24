@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.opentouchgaming.androidcore.AppInfo;
 import com.opentouchgaming.androidcore.AppSettings;
 import com.opentouchgaming.androidcore.GamepadActivity;
+import com.opentouchgaming.androidcore.InGameOptionsInterface;
 import com.opentouchgaming.androidcore.Utils;
 import com.opentouchgaming.androidcore.controls.ControlInterpreter;
 import com.opentouchgaming.androidcore.controls.GamepadDefinitions;
@@ -55,6 +56,8 @@ public class SDLOpenTouch
     static QuickCommandDialog quickCommandDialog;
     static String quickCommandMainPath;
     static String quickCommandModPath;
+
+    static String inGameOptionsClass;
 
     // Bridge references to avoid direct dependency on package-specific SDLActivity/SDLAudioManager
     static View surfaceView;
@@ -286,6 +289,8 @@ public class SDLOpenTouch
         quickCommandMainPath = intent.getStringExtra("quick_command_main_path");
         quickCommandModPath = intent.getStringExtra("quick_command_mod_path");
 
+        inGameOptionsClass = intent.getStringExtra("in_game_options_class");
+
         userFiles = intent.getStringExtra("user_files");
         String logFilename = intent.getStringExtra("log_filename");
         String tmpFiles = activity.getCacheDir().getAbsolutePath();
@@ -415,6 +420,7 @@ public class SDLOpenTouch
     protected static final int COMMAND_LOAD_SAVE_CONTROLS = 0x8006;
     protected static final int COMMAND_EXIT_APP = 0x8007;
     protected static final int COMMAND_SHOW_QUICK_COMMANDS = 0x8008;
+    protected static final int COMMAND_SHOW_ENGINE_OPTIONS = 0x8009;
 
     static public boolean CommandHandler(Activity activity, Message msg)
     {
@@ -483,6 +489,23 @@ public class SDLOpenTouch
             case COMMAND_LOAD_SAVE_CONTROLS:
             {
                 new TouchSettingsSaveLoad(activity, userFiles, engine);
+                break;
+            }
+            case COMMAND_SHOW_ENGINE_OPTIONS:
+            {
+                if (inGameOptionsClass != null)
+                {
+                    try
+                    {
+                        // Reflection: the impl lives in the app module, which androidcore cannot depend on
+                        InGameOptionsInterface options = (InGameOptionsInterface) Class.forName(inGameOptionsClass).getDeclaredConstructor().newInstance();
+                        options.showDialog(activity, command -> NativeLib.executeCommand(command));
+                    }
+                    catch (Exception e)
+                    {
+                        Log.e(TAG, "Failed to show in-game options: " + e);
+                    }
+                }
                 break;
             }
             case COMMAND_SHOW_QUICK_COMMANDS:

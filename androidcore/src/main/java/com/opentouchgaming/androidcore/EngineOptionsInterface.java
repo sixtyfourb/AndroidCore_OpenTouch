@@ -66,5 +66,8 @@ public interface EngineOptionsInterface
          * implement PortableSetMouseTapMode() act on it (see GAME_OPTION_MOUSE_TAP_MODE).
          */
         public boolean mouseTapMode = true;
+
+        /** Class name of an InGameOptionsInterface impl, shown by KEY_SHOW_ENGINE_OPTIONS. Null = none. */
+        public String inGameOptionsClass = null;
     }
 }

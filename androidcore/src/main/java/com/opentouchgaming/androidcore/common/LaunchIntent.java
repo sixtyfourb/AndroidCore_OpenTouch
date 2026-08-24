@@ -56,6 +56,10 @@ public class LaunchIntent
         // In-menu tap-to-position mouse (TFE / OpenJK)
         intent.putExtra("mouse_tap_mode", runInfo.mouseTapMode);
 
+        // In-game engine options dialog (instantiated by reflection in the :game process)
+        if (runInfo.inGameOptionsClass != null)
+            intent.putExtra("in_game_options_class", runInfo.inGameOptionsClass);
+
         // Other
         intent.putExtra("game_type", gameType);
         intent.putExtra("wheel_nbr", weaponWheel);
