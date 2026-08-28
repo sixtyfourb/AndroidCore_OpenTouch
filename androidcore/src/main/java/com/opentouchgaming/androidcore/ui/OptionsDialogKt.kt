@@ -90,7 +90,7 @@ class OptionsDialogKt(
             "Full screen",
             "Go full screen by hiding the system navigation buttons",
             HIDE_NAV_BAR,
-            false,
+            true,
             R.drawable.settings_hide_nav
         )
 

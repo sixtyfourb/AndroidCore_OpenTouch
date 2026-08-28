@@ -152,7 +152,8 @@ public class SDLOpenTouch
         // keep screen on
         activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        Utils.setImmersionMode(activity, activity.getWindow(),  OptionsDialogKt.HIDE_NAV_BAR);
+        // Default on: see setImmersionMode for why the game wants the whole display.
+        Utils.setImmersionMode(activity, activity.getWindow(), OptionsDialogKt.HIDE_NAV_BAR, true);
         Utils.expandToCutout(activity, activity.getWindow(), OptionsDialogKt.EXPAND_INTO_NOTCH);
 
         gyro = new SDLOpenTouchGyro(activity, activity.getWindowManager().getDefaultDisplay().getRotation());
