@@ -601,9 +601,24 @@ public class Utils
 
     public static void setImmersionMode(final Context ctx, Window window, String key)
     {
+        setImmersionMode(ctx, window, key, false);
+    }
+
+    /*
+     * defaultValue matters. With the navigation bar showing, the surface the game
+     * is handed is shorter than the display - 1920x972 of 1920x1080 on the Retroid
+     * - and an engine that takes its screen size from the display rather than the
+     * surface then draws and hit-tests in two different spaces. FreeSpace did
+     * exactly that: menu clicks landed about a hundred pixels from the finger. So
+     * the in-game window defaults to full screen, where the surface is the whole
+     * display and the two agree. The bar is still there on a swipe, drawn over the
+     * game rather than shrinking it, because of IMMERSIVE_STICKY below.
+     */
+    public static void setImmersionMode(final Context ctx, Window window, String key, boolean defaultValue)
+    {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
         {
-            if (SwitchWidget.fetchValue(ctx, key, false))
+            if (SwitchWidget.fetchValue(ctx, key, defaultValue))
             {
                 window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
                                                             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
