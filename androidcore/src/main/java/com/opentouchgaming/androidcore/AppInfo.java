@@ -54,6 +54,12 @@ public class AppInfo
     public static boolean showRateButton = true;
     public static boolean canDisabledScopedStorage = true;
 
+    // Non-Play apps only: the app uses MANAGE_EXTERNAL_STORAGE (All files access) instead of
+    // scoped storage on Android 11+, so the native engines keep full filesystem access
+    // (chdir/fopen on real paths). Must be set BEFORE setAppInfo() is called. The app is
+    // responsible for requesting the permission itself (settings toggle, not a runtime dialog).
+    public static boolean useAllFilesAccess = false;
+
     // Online version check. Setting versionCheckKey non-null enables it: MainFragment
     // queries versionCheckUrl with this key and shows the download button (-> website)
     // if the server reports a higher versionCode than the installed one.
@@ -95,7 +101,8 @@ public class AppInfo
         AppInfo.groupSimilarEngines = SwitchWidget.fetchValue(ctx, OptionsDialogKt.GROUP_SIMILAR_ENGINES, groupSimilarDefault);
 
         // NOW DEFAULT TO SCOPED STORAGE ON NEW INSTALL!!
-        if (app != Apps.RAZE_TOUCH)
+        // Apps using All files access (non-Play, e.g. Zeta Touch) opt out of scoped storage entirely.
+        if (!useAllFilesAccess)
         {
             String appDir = AppSettings.getStringOption(context, "app_dir", null);
             if (appDir == null && isScopedAllowed())
@@ -155,6 +162,12 @@ public class AppInfo
     static public boolean isScopedAllowed()
     {
         return (Build.VERSION.SDK_INT >= SCOPED_VERSION);
+    }
+
+    // True when the app opted in to All files access AND the user has granted it
+    static public boolean hasAllFilesAccess()
+    {
+        return useAllFilesAccess && Build.VERSION.SDK_INT >= 30 && Environment.isExternalStorageManager();
     }
 
     static public boolean isScopedEnabled()
